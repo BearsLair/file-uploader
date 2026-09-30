@@ -2,6 +2,7 @@ import express from "express";
 import expressSession from "express-session";
 import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
+import indexRouter from "./routes/indexRouter.js";
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client.js";
@@ -40,6 +41,8 @@ app.use(
     }),
   }),
 );
+
+app.use("/", indexRouter);
 
 const PORT = process.env.PORT || 3000;
 
