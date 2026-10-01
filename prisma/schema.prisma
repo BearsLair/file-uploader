@@ -3,6 +3,8 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+// Note to self: after changeing schema, regenerate the client with `npx prisma generate`
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -30,6 +32,6 @@ model File {
 model Session {
   id        String   @id
   sid       String   @unique
-  data      String   @db.Text  // Use Text for PostgreSQL
-  expiresAt   DateTime
+  data      String
+  expiresAt DateTime
 }

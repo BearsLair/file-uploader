@@ -1,15 +1,11 @@
 import express from "express";
+const app = express();
 import expressSession from "express-session";
-import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
+import "dotenv/config";
 
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client.js";
+import { prisma } from "./lib/prisma.js";
+// Import PrismaSessionStore for Prisma session management (it's not native to Prisma)
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-
-const connectionString = `${process.env.DATABASE_URL}`;
-const adapter = new PrismaPg(connectionString);
-const prisma = new PrismaClient({ adapter });
 
 // Todo add passport configuration
 import passport from "passport";
@@ -19,12 +15,13 @@ import path from "node:path";
 import indexRouter from "./routes/indexRouter.js"; // Load the main application router
 
 // Configure EJS view engine and directory location
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(import.meta.dirname, "views"));
 app.set("view engine", "ejs");
 
 // Enable URL-encoded form data parsing (required for login forms)
 app.use(express.urlencoded({ extended: true }));
 
+// Configure session storage with PrismaSessionStore
 app.use(
   expressSession({
     cookie: {
