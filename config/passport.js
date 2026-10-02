@@ -13,7 +13,7 @@ passport.use(
       // Query with Prisma the database for the specific user based on the provided username.
       const user = await prisma.user.findUnique({
         where: {
-          username,
+          name: username,
         },
       });
 
