@@ -15,7 +15,7 @@ indexRouter.get("/register", (req, res) => {
 
 indexRouter.post("/register", uploaderControllers.registerUser);
 
-// User login
+// User login with passport
 indexRouter.post(
   "/login",
   passport.authenticate("local", {
@@ -23,6 +23,16 @@ indexRouter.post(
     failureRedirect: "/",
   }),
 );
+
+// User logout with passport
+indexRouter.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
 
 // Render file viewer page
 indexRouter.get("/file-viewer", (req, res) => {
