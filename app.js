@@ -46,6 +46,11 @@ app.use(
   }),
 );
 
+// Import passport configuration and initialize it
+import "./config/passport.js";
+app.use(passport.session());
+
+// Initialize router
 app.use("/", indexRouter);
 
 const PORT = process.env.PORT || 3000;

@@ -1,7 +1,7 @@
-const passport = require("passport"); // Import Passport middleware to manage authentication strategies
-const LocalStrategy = require("passport-local").Strategy; // Import the local strategy (username/password) instead of OAuth or JWT
-const bcrypt = require("bcryptjs"); // Import hashing library for secure password comparison
-const pool = require("../db/pool"); // Import database connection pool used for querying user data
+import passport from "passport"; // Import Passport middleware to manage authentication strategies
+import LocalStrategy from "passport-local"; // Import the local strategy (username/password) instead of OAuth or JWT
+import bcrypt from "bcryptjs"; // Import hashing library for secure password comparison
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Rationale: This defines the authentication logic using the LocalStrategy.
@@ -10,14 +10,12 @@ const pool = require("../db/pool"); // Import database connection pool used for 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      // Query the database for the specific user based on the provided username.
-      // Using parameterized queries ($1) prevents SQL injection attacks.
-      const { rows } = await pool.query(
-        "SELECT * FROM users WHERE username = $1",
-        [username],
-      );
-
-      const user = rows[0]; // Extract the first (and expected only) row from results
+      // Query with Prisma the database for the specific user based on the provided username.
+      const user = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+      });
 
       if (!user) {
         // Rationale: If no user is found with this username, we return a failure signal.
@@ -63,16 +61,14 @@ passport.serializeUser((user, done) => done(null, user.id));
  */
 passport.deserializeUser(async (id, done) => {
   try {
-    // Query the userinfo table to retrieve specific profile fields needed for the application.
+    // Query with Prisma the userinfo table to retrieve specific profile fields needed for the application.
     // We select only necessary columns (firstname, lastname, member status, admin status, usersid)
     // rather than fetching the entire row to optimize performance.
-    const { rows } = await pool.query(
-      "SELECT firstname, lastname, member, admin, usersid FROM userinfo WHERE usersid = $1",
-      [id],
-    );
-
-    const user = rows[0]; // Extract the user object from results
-
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
     done(null, user); // Return the populated user object to Passport so it attaches it to req.user
   } catch (err) {
     // If the session ID is invalid or the user data cannot be found in the database,
