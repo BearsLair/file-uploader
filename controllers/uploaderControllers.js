@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma.js";
 
+// Register a new user
 async function registerUser(req, res) {
   console.log("Username: ", req.body.username);
   try {

@@ -37,7 +37,7 @@ passport.use(
 
       // SUCCESS: Credentials are valid. Return the full user object so Passport can attach it
       // to the request context (req.user) for subsequent routes and views.
-      return done(null, user);
+      return done(null, { id: user.id, name: user.name });
     } catch (error) {
       // Rationale: Catch any database errors or unexpected exceptions during authentication.
       // Passing `done(error)` stops the flow and triggers Passport's error handling middleware
@@ -69,7 +69,7 @@ passport.deserializeUser(async (id, done) => {
         id,
       },
     });
-    done(null, user); // Return the populated user object to Passport so it attaches it to req.user
+    done(null, user ? { id: user.id, name: user.name } : null); // Return the populated user object to Passport so it attaches it to req.user
   } catch (err) {
     // If the session ID is invalid or the user data cannot be found in the database,
     // we pass the error. This typically results in the user being logged out or redirected to login.
